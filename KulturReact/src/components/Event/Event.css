@@ -1,0 +1,19 @@
+.event {
+    background-color: var(--color-blanco);
+    margin: 10px;
+    padding: 15px;
+    border-radius: 8px;
+    display: inline-block;
+    width: 250px;
+    box-shadow: 0px 4px 6px var(--color-sombra);
+    transition: transform 0.3s ease-in-out;
+}
+
+.event:hover {
+    transform: scale(1.05);
+}
+
+.event img {
+    width: 100%;
+    border-radius: 5px;
+}
