@@ -11,7 +11,6 @@ function App() {
         async function loadInitialEvents() {
             const data = await showEvents();
             setEventos(data);
-            console.log(eventos);
         }
         loadInitialEvents();
     }, []);
