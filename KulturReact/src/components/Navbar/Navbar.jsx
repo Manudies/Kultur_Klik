@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 
 import { fetchData } from "../../utils/fech";
 import Select from "../Select/Select.jsx";
+import Button from "../button/Button.jsx";
 
 import "./Navbar.css";
 
@@ -53,12 +54,8 @@ const Navbar = ({ onFilter, onShowFavorites }) => {
                 onChange={(value) => setSelectedProvince(value)}
             />
             {/* Botones */}
-            <button id="boton" onClick={() => onFilter(selectedCategory, selectedProvince)}>
-                Filtrar
-            </button>
-            <button id="boton_fav" onClick={onShowFavorites}>
-                Favoritos
-            </button>
+            <Button label="Filtrar" clase="boton" onClick={() => onFilter(selectedCategory, selectedProvince)}></Button>
+            <Button label="Favoritos" clase="boton" onClick={onShowFavorites}></Button>
         </nav>
     );
 };
