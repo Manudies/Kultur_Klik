@@ -24,7 +24,7 @@ function Event({ evento, onToggleFavorite, isFavorite }) {
                     label={isFavorite ? "❤️ Quitar de favoritos" : "🤍 Añadir a favoritos"}
                     onClick={() => onToggleFavorite(evento)}
                 />
-                <Button clase="info" label="Más Info" />
+                <Button clase="info" label="Más Info" onClick={() => window.open(evento.sourceUrlEs, "_blank")} />
             </div>
         </div>
     );
