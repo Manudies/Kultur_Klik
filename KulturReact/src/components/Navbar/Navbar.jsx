@@ -6,7 +6,7 @@ import Button from "../button/Button.jsx";
 
 import "./Navbar.css";
 
-const Navbar = ({ onFilter, onShowFavorites }) => {
+function Navbar ({ onFilter, onToggleFavorites, showingFavorites }) {
     const [categories, setCategories] = useState([]);
     const [provinces, setProvinces] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState("0");
@@ -55,7 +55,7 @@ const Navbar = ({ onFilter, onShowFavorites }) => {
             />
             {/* Botones */}
             <Button label="Filtrar" clase="boton" onClick={() => onFilter(selectedCategory, selectedProvince)}></Button>
-            <Button label="Favoritos" clase="boton" onClick={onShowFavorites}></Button>
+            <Button label={showingFavorites ? "Eventos" : "Favoritos"} clase="boton" onClick={onToggleFavorites}></Button>
         </nav>
     );
 };

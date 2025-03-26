@@ -1,10 +1,23 @@
 import { useEffect, useState } from "react";
 import Navbar from "./components/Navbar/Navbar.jsx";
 import EventList from "./components/EventList/EventList.jsx";
-import { showEvents, showEventsType, showEventsProvince, showEventsProAndType } from "./utils/eventos";
+import Footer from "./components/Footer/Footer.jsx";
+import {
+    showEvents,
+    showEventsType,
+    showEventsProvince,
+    showEventsProAndType
+} from "./utils/eventos";
+
+import "./App.css";
 
 function App() {
     const [eventos, setEventos] = useState([]);
+    const [favorites, setFavorites] = useState(() => {
+        const saved = localStorage.getItem("favoritos");
+        return saved ? JSON.parse(saved) : [];
+    });
+    const [showingFavorites, setShowingFavorites] = useState(false);
 
     // Cargar eventos iniciales
     useEffect(() => {
@@ -14,6 +27,11 @@ function App() {
         }
         loadInitialEvents();
     }, []);
+
+    // Guardar favoritos en el localStorage
+    useEffect(() => {
+        localStorage.setItem("favoritos", JSON.stringify(favorites));
+    }, [favorites]);
 
     // Función de filtro
     const handleFilter = async (category, province) => {
@@ -30,17 +48,39 @@ function App() {
         }
 
         setEventos(data);
+        setShowingFavorites(false); // Volver a eventos cuando se aplica un filtro
     };
 
-    const handleShowFavorites = () => {
-        // Aquí puedes añadir tu lógica de favoritos si quieres
-        alert("Función de favoritos no implementada aún.");
+    const toggleFavorite = (evento) => {
+        const isAlreadyFavorite = favorites.some((fav) => fav.id === evento.id);
+
+        if (isAlreadyFavorite) {
+            setFavorites(favorites.filter((fav) => fav.id !== evento.id));
+        } else {
+            setFavorites([...favorites, evento]);
+        }
+    };
+
+    const handleToggleFavorites = () => {
+        setShowingFavorites((prev) => !prev);
     };
 
     return (
         <div>
-            <Navbar onFilter={handleFilter} onShowFavorites={handleShowFavorites} />
-            <EventList eventos={eventos} />
+            <Navbar
+                onFilter={handleFilter}
+                onToggleFavorites={handleToggleFavorites}
+                showingFavorites={showingFavorites}
+            />
+
+            <EventList
+                eventos={showingFavorites ? favorites : eventos}
+                onToggleFavorite={toggleFavorite}
+                favorites={favorites}
+                showingFavorites={showingFavorites}
+            />
+
+            <Footer />
         </div>
     );
 }

@@ -1,18 +1,32 @@
 import Button from "../button/Button.jsx";
 import "./Event.css";
 
+function Event({ evento, onToggleFavorite, isFavorite }) {
+    const defaultImage = "./lauburu.png"; // Ajuste de ruta (no necesita `/public/`)
 
-function Event({ evento }) {
-    const defaultImage = "./public/lauburu.png";
     return (
         <div className="event">
             <h2>{evento.nameEs}</h2>
-            <img src= {(evento.images && evento.images.length > 0) ? evento.images[0].imageUrl : defaultImage} alt={evento.imageFileName} />
+
+            <img
+                src={evento.images && evento.images.length > 0
+                    ? evento.images[0].imageUrl
+                    : defaultImage}
+                alt={evento.imageFileName || evento.nameEs}
+            />
+
             <p>Fecha: {evento.startDate}</p>
             <p>Provincia: {evento.municipalityEs}</p>
-            <Button clase="fav" label="Favoritos" />
-            <Button clase="info" label="Más Info"></Button>
+
+            <div className="button-container">
+                <Button
+                    clase={isFavorite ? "fav active" : "fav"}
+                    label={isFavorite ? "❤️ Quitar de favoritos" : "🤍 Añadir a favoritos"}
+                    onClick={() => onToggleFavorite(evento)}
+                />
+                <Button clase="info" label="Más Info" />
             </div>
+        </div>
     );
 }
 
