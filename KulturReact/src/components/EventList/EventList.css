@@ -3,12 +3,16 @@
 }
 
 .event-list h1 {
-    text-align: center;
+    display: flex;
+    justify-content: center;
     margin-bottom: 20px;
+    justify-items: center;
+
 }
 
 .event-list-container {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    align-items: center;
 }

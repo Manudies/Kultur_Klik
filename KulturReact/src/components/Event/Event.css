@@ -1,9 +1,11 @@
 .event {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     background-color: var(--color-blanco);
     margin: 10px;
     padding: 15px;
     border-radius: 8px;
-    display: inline-block;
     width: 250px;
     height: 415px;
     box-shadow: 0px 4px 6px var(--color-sombra);
@@ -27,4 +29,10 @@
     font-size: 18px;
     margin: 10px 0;
     padding: 10px 0;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
 }
