@@ -26,8 +26,14 @@ function Event({ evento, onToggleFavorite, isFavorite }) {
             />
 
             {/* Información adicional del evento */}
-            <p>Fecha: {evento.startDate}</p>
-            <p>Provincia: {evento.municipalityEs}</p>
+            <p>
+                Fecha: {new Date(evento.startDate).toLocaleDateString('es-ES', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric'
+                })}
+            </p>
+            <p>Provincia: {evento.municipalityEs?.split("/")[0]}</p>
 
             {/* Botones para añadir a favoritos o ver más información */}
             <div className="button-container">

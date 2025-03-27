@@ -1,6 +1,7 @@
 .event-list {
-    margin-top: 100px;
     min-height: 84vh;
+    max-width: 80vw;
+    margin: auto;
 }
 
 .event-list h1 {

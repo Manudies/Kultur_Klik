@@ -1,8 +1,4 @@
 nav {
-    position: fixed; /* Fijado en la parte superior */
-    top: 0;
-    left: 0;
-    width: 100vw; /* Ocupa todo el ancho del viewport */
     background: linear-gradient(to right, #0044cc, #0088ff);
     color: white;
     display: flex;

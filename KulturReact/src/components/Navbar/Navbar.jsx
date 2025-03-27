@@ -47,6 +47,9 @@ function Navbar ({ onFilter, onToggleFavorites, showingFavorites }) {
 
     return (
         <nav>
+            <div className="navbar-brand">
+                <h1 className="logo2">🌄 Kultur Klik</h1>
+            </div>
             {/* Selector de Categoría */}
             <Select
                 label="Categoría:"
