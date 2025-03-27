@@ -89,7 +89,7 @@ Así, aunque cierres la página, se mantienen al volver.
 
 ---
 
-## 📸 Captura de pantalla (opcional)
+## 📸 Captura de pantalla
 
 
 <--[Vista de la aplicación](./KulturReact/public/Captura%20desde%202025-03-27%2010-45-28.png) -->
