@@ -18,7 +18,7 @@ Aplicación desarrollada en **React** que consume la API de eventos culturales d
 
 ```bash
 # Clona el repositorio
-git clone https://github.com/tuusuario/react-eventos-euskadi.git
+git clone https://github.com/Manudies/Kultur_Klik.git
 cd react-eventos-euskadi
 
 # Instala dependencias
