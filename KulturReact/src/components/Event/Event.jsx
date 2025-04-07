@@ -34,6 +34,7 @@ function Event({ evento, onToggleFavorite, isFavorite }) {
                 })}
             </p>
             <p>Provincia: {evento.municipalityEs?.split("/")[0]}</p>
+            <p>Precio: {evento.priceEs}</p>
 
             {/* Botones para añadir a favoritos o ver más información */}
             <div className="button-container">
