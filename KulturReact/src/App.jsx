@@ -5,101 +5,132 @@ import EventList from "./components/EventList/EventList.jsx";
 import Footer from "./components/Footer/Footer.jsx";
 
 // Importamos funciones utilitarias para obtener eventos según distintos criterios
-import { showEvents, showEventsType, showEventsProvince, showEventsProAndType} from "./utils/eventos";
+import { getFilteredEvents } from "./utils/eventos";
 
 // Importamos los estilos globales de la app
 import "./App.css";
 
 function App() {
-    // Estado para los eventos que se van a mostrar
-    const [eventos, setEventos] = useState([]);
+  const [eventos, setEventos] = useState([]);
+  const [favorites, setFavorites] = useState(() => {
+    const saved = localStorage.getItem("favoritos");
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [showingFavorites, setShowingFavorites] = useState(false);
+  const [page, setPage] = useState(1);
+  // Nota: utilizamos "monthOnly" para mantener la estructura actual, aunque luego
+  // getFilteredEvents espere quizá un parámetro "date". Por ahora no se toca eventos.js.
+  const [filter, setFilter] = useState({
+    category: "0",
+    province: "0",
+    municipality: "0",
+    monthOnly: null,
+  });
+  const [fallbackUsed, setFallbackUsed] = useState(false);
 
-    // Estado para los eventos favoritos, inicializado con lo que esté en localStorage (si hay)
-    const [favorites, setFavorites] = useState(() => {
-        const saved = localStorage.getItem("favoritos");
-        return saved ? JSON.parse(saved) : [];
+  // useEffect para cargar eventos según los filtros y la página actual
+  useEffect(() => {
+    if (showingFavorites) return;
+
+    async function loadEvents() {
+      setFallbackUsed(false);
+      console.log("Cargando eventos con filtro:", filter, "y page:", page);
+      const data = await getFilteredEvents({
+        category: filter.category,
+        province: filter.province,
+        municipality: filter.municipality,
+        monthOnly: filter.monthOnly,
+        page,
+        setFallbackUsed,
+      });
+      setEventos(data);
+    }
+    loadEvents();
+  }, [page, filter, showingFavorites]);
+
+  // Guardamos favoritos en localStorage
+  useEffect(() => {
+    localStorage.setItem("favoritos", JSON.stringify(favorites));
+  }, [favorites]);
+
+  // Manejador de filtros: recibe argumentos posicionales y actualiza el estado de filtro
+  const handleFilter = (category, province, _date, municipality, monthOnly) => {
+    console.log("handleFilter llamado con:", {
+      category,
+      province,
+      _date,
+      municipality,
+      monthOnly,
     });
+    // Actualizamos el estado de filtro (se actualiza solo lo que requiere eventos.js)
+    setFilter({ category, province, municipality, monthOnly });
+    setPage(1);
+    setShowingFavorites(false);
+  };
 
-    // Estado para saber si se están mostrando los favoritos en lugar del listado completo
-    const [showingFavorites, setShowingFavorites] = useState(false);
+  // Función para alternar favorito
+  const toggleFavorite = (evento) => {
+    const isAlreadyFavorite = favorites.some((fav) => fav.id === evento.id);
+    if (isAlreadyFavorite) {
+      setFavorites(favorites.filter((fav) => fav.id !== evento.id));
+    } else {
+      setFavorites([...favorites, evento]);
+    }
+  };
 
-    // useEffect que se ejecuta solo una vez al montar el componente
-    // Carga los eventos iniciales llamando a showEvents
-    useEffect(() => {
-        async function loadInitialEvents() {
-            const data = await showEvents();
-            setEventos(data);
-        }
-        loadInitialEvents();
-    }, []);
+  const handleToggleFavorites = () => {
+    setShowingFavorites((prev) => !prev);
+  };
 
-    // useEffect que guarda los favoritos en localStorage cada vez que estos cambian
-    useEffect(() => {
-        localStorage.setItem("favoritos", JSON.stringify(favorites));
-    }, [favorites]);
+  const handlePreviousPage = () => {
+    if (page > 1) setPage((prev) => prev - 1);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
-    // Función para filtrar eventos según categoría y provincia
-    const handleFilter = async (category, province) => {
-        let data = [];
+  const handleNextPage = () => {
+    setPage((prev) => prev + 1);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
-        if (category !== "0" && province !== "0") {
-            data = await showEventsProAndType(category, province);
-        } else if (category !== "0") {
-            data = await showEventsType(category);
-        } else if (province !== "0") {
-            data = await showEventsProvince(province);
-        } else {
-            data = await showEvents();
-        }
+  return (
+    <div>
+      <Navbar
+        onFilter={handleFilter}
+        onToggleFavorites={handleToggleFavorites}
+        showingFavorites={showingFavorites}
+      />
 
-        setEventos(data);
-        setShowingFavorites(false); // Al aplicar filtro, dejamos de mostrar favoritos
-    };
-
-    // Añadir o quitar un evento de favoritos
-    const toggleFavorite = (evento) => {
-        const isAlreadyFavorite = favorites.some((fav) => fav.id === evento.id);
-        // Comprueba si el evento ya está en la lista de favoritos
-        // `.some()` devuelve true si al menos un favorito tiene el mismo id que el evento actual
-        if (isAlreadyFavorite) {
-            // Si ya está en favoritos, lo eliminamos
-            setFavorites(favorites.filter((fav) => fav.id !== evento.id));
-        } else {
-            // Si no está, lo añadimos
-            setFavorites([...favorites, evento]);
-        }
-    };
-
-    // Alterna entre mostrar favoritos o la lista de eventos
-    const handleToggleFavorites = () => {
-        setShowingFavorites((prev) => !prev);
-        //setShowingFavorites actualiza el estado showingFavorites. 
-        // prev representa el valor anterior de showingFavorites.
-        // !prev lo invierte: true pasa a false, y false a true.
-        // Esto sirve para activar o desactivar la vista de favoritos.
-    };
-
-    return (
-        <div>
-            {/* Navbar recibe funciones para aplicar filtros y cambiar a favoritos */}
-            <Navbar
-                onFilter={handleFilter}
-                onToggleFavorites={handleToggleFavorites}
-                showingFavorites={showingFavorites}
-            />
-
-            {/* Lista de eventos: muestra los favoritos o los eventos filtrados */}
-            <EventList
-                eventos={showingFavorites ? favorites : eventos}
-                onToggleFavorite={toggleFavorite}
-                favorites={favorites}
-                showingFavorites={showingFavorites}
-            />
-
-            {/* Pie de página de la app */}
-            <Footer />
+      {fallbackUsed && (
+        <div className="alerta-fallback">
+          ⚠️ No se han podido cargar todos los eventos del mes. Mostrando solo los de hoy.
         </div>
-    );
+      )}
+
+      <EventList
+        eventos={showingFavorites ? favorites : eventos}
+        onToggleFavorite={toggleFavorite}
+        favorites={favorites}
+        showingFavorites={showingFavorites}
+        page={page}
+      />
+
+      {!showingFavorites && (
+        <div style={{ textAlign: "center", margin: "2rem" }}>
+          {page > 1 && (
+            <button onClick={handlePreviousPage} className="boton">
+              ◀ Página anterior
+            </button>
+          )}
+          <span style={{ margin: "0 1rem" }}>Página {page}</span>
+          <button onClick={handleNextPage} className="boton">
+            Página siguiente ▶
+          </button>
+        </div>
+      )}
+
+      <Footer />
+    </div>
+  );
 }
 
 export default App;

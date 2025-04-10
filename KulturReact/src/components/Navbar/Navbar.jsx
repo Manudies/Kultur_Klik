@@ -1,86 +1,171 @@
 import { useState, useEffect } from "react";
-
-// Utilidad para hacer fetch a la API
 import { fetchData } from "../../utils/fech";
-// Componentes personalizados
 import Select from "../Select/Select.jsx";
 import Button from "../button/Button.jsx";
-
-// Estilos del navbar
 import "./Navbar.css";
 
-function Navbar ({ onFilter, onToggleFavorites, showingFavorites }) {
-    // Estado para las categorías de eventos
-    const [categories, setCategories] = useState([]);
-    // Estado para las provincias
-    const [provinces, setProvinces] = useState([]);
-    // Estado para la categoría seleccionada
-    const [selectedCategory, setSelectedCategory] = useState("0");
-    // Estado para la provincia seleccionada
-    const [selectedProvince, setSelectedProvince] = useState("0");
+function Navbar({ onFilter, onToggleFavorites, showingFavorites }) {
+  const [categories, setCategories] = useState([]);
+  const [provinces, setProvinces] = useState([]);
+  const [municipalities, setMunicipalities] = useState([]);
+  const [loadingMunicipalities, setLoadingMunicipalities] = useState(false);
 
-    // useEffect para obtener las categorías de la API al montar el componente
-    useEffect(() => {
-        async function fetchCategories() {
-            try {
-                const data = await fetchData("https://api.euskadi.eus/culture/events/v1.0/eventType");
-                setCategories(data); // Guardamos las categorías en el estado
-            } catch (error) {
-                console.error("Error al obtener las categorías:", error);
-            }
+  // Usamos "0" para indicar que no hay filtro seleccionado
+  const [selectedCategory, setSelectedCategory] = useState("0");
+  const [selectedProvince, setSelectedProvince] = useState("0");
+  const [selectedMunicipality, setSelectedMunicipality] = useState("0");
+
+  // Ahora, en lugar de una fecha concreta, capturamos un mes en formato YYYY-MM
+  const [selectedMonth, setSelectedMonth] = useState("");
+
+  // Cargar municipios según la provincia seleccionada
+  async function fetchMunicipalities(provinceId) {
+    const allMunicipalities = [];
+    let currentPage = 1;
+    let totalPages = 1;
+
+    setLoadingMunicipalities(true);
+
+    try {
+      while (currentPage <= totalPages) {
+        const url = `https://api.euskadi.eus/culture/events/v1.0/municipalities/byProvince/${provinceId}?_elements=20&_page=${currentPage}&provinceId=${provinceId}`;
+        const data = await fetchData(url);
+
+        if (data && data.items) {
+          allMunicipalities.push(...data.items);
+          totalPages = data.totalPages || 1;
+          currentPage++;
+        } else {
+          break;
         }
-        fetchCategories();
-    }, []);
+      }
 
-    // useEffect para obtener las provincias de la API al montar el componente
-    useEffect (() => {
-        async function fechProvinces() {
-            try {
-                const provinData = await fetchData("https://api.euskadi.eus/culture/events/v1.0/provinces");
-                setProvinces(provinData.items); // Guardamos las provincias (items) en el estado
-            } catch (error) {
-                console.error("Error al obtener las provincias:", error);
-            }
-        }
-        fechProvinces();
-    }, []);
+      setMunicipalities(allMunicipalities);
+    } catch (error) {
+      console.error("Error al obtener municipios:", error);
+    } finally {
+      setLoadingMunicipalities(false);
+    }
+  }
 
-    return (
-        <nav>
-            <div className="navbar-brand">
-                <h1 className="logo2">🌄 Kultur Klik</h1>
-            </div>
-            {/* Selector de Categoría */}
-            <Select
-                label="Categoría:"
-                type="categorias"
-                value={selectedCategory}
-                onChange={(value) => setSelectedCategory(value)} // Actualiza estado al seleccionar
-            />
+  // Cargar categorías
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const data = await fetchData("https://api.euskadi.eus/culture/events/v1.0/eventType");
+        setCategories(data);
+      } catch (error) {
+        console.error("Error al obtener las categorías:", error);
+      }
+    }
+    fetchCategories();
+  }, []);
 
-            {/* Selector de Provincia */}
-            <Select
-                label="Provincia:"
-                type="provincias"
-                value={selectedProvince}
-                onChange={(value) => setSelectedProvince(value)} // Actualiza estado al seleccionar
-            />
+  // Cargar provincias
+  useEffect(() => {
+    async function fetchProvinces() {
+      try {
+        const data = await fetchData("https://api.euskadi.eus/culture/events/v1.0/provinces");
+        setProvinces(data.items);
+      } catch (error) {
+        console.error("Error al obtener las provincias:", error);
+      }
+    }
+    fetchProvinces();
+  }, []);
 
-            {/* Botón para aplicar filtro */}
-            <Button 
-                label="Filtrar" 
-                clase="boton" 
-                onClick={() => onFilter(selectedCategory, selectedProvince)} // Ejecuta función de filtro con los valores seleccionados
-            />
+  // Actualizar municipios cuando se cambia la provincia
+  useEffect(() => {
+    if (selectedProvince === "0") {
+      setMunicipalities([]);
+      return;
+    }
+    fetchMunicipalities(selectedProvince);
+  }, [selectedProvince]);
 
-            {/* Botón para alternar entre eventos y favoritos */}
-            <Button 
-                label={showingFavorites ? "Eventos" : "Favoritos"} // Cambia el texto según el estado
-                clase="boton" 
-                onClick={onToggleFavorites} // Alterna el estado de mostrar favoritos
-            />
-        </nav>
-    );
-};
+  return (
+    <nav>
+      <div className="navbar-brand">
+        <h1 className="logo2">🌄 Kultur Klik</h1>
+      </div>
+
+      <Select
+        label="Categoría:"
+        type="categorias"
+        value={selectedCategory}
+        onChange={(value) => {
+          console.log("selectedCategory:", value);
+          setSelectedCategory(value);
+        }}
+      />
+
+      <Select
+        label="Provincia:"
+        type="provincias"
+        value={selectedProvince}
+        onChange={(value) => {
+          console.log("selectedProvince:", value);
+          setSelectedProvince(value);
+        }}
+      />
+
+      {selectedProvince !== "0" && (
+        <Select
+          label="Municipio:"
+          type="municipios"
+          value={selectedMunicipality}
+          onChange={(value) => {
+            console.log("selectedMunicipality:", value);
+            setSelectedMunicipality(value);
+          }}
+          opciones={
+            loadingMunicipalities
+              ? [{ municipalityId: "-1", nameEs: "Cargando municipios..." }]
+              : municipalities
+          }
+        />
+      )}
+
+      {/* Se reemplaza el input type="date" por un input type="month" */}
+      <div className="filtro-mes">
+        <label htmlFor="mes">Mes:</label>
+        <input
+          type="month"
+          id="mes"
+          value={selectedMonth}
+          onChange={(e) => {
+            console.log("Valor capturado (mes):", e.target.value);
+            setSelectedMonth(e.target.value);
+          }}
+        />
+      </div>
+
+      <Button
+        label="Filtrar"
+        onClick={() => {
+          console.log("Filtrando con los siguientes valores:");
+          console.log("Categoría:", selectedCategory);
+          console.log("Provincia:", selectedProvince);
+          console.log("Municipio:", selectedMunicipality);
+          console.log("Mes:", selectedMonth);
+          console.log("Página:", 1);
+          // Se llama a onFilter con argumentos posicionales:
+          // 1. selectedCategory  
+          // 2. selectedProvince  
+          // 3. null (porque ya no usamos una fecha concreta)  
+          // 4. selectedMunicipality  
+          // 5. selectedMonth (como monthOnly)
+          onFilter(selectedCategory, selectedProvince, null, selectedMunicipality, selectedMonth);
+        }}
+      />
+
+      <Button
+        label={showingFavorites ? "Eventos" : "Favoritos"}
+        clase="boton"
+        onClick={onToggleFavorites}
+      />
+    </nav>
+  );
+}
 
 export default Navbar;
