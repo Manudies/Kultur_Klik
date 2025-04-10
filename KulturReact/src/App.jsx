@@ -4,7 +4,7 @@ import Navbar from "./components/Navbar/Navbar.jsx";
 import EventList from "./components/EventList/EventList.jsx";
 import Footer from "./components/Footer/Footer.jsx";
 
-// Importamos funciones utilitarias para obtener eventos según distintos criterios
+// Importamos la función utilitaria para obtener eventos según distintos criterios
 import { getFilteredEvents } from "./utils/eventos";
 
 // Importamos los estilos globales de la app
@@ -18,8 +18,7 @@ function App() {
   });
   const [showingFavorites, setShowingFavorites] = useState(false);
   const [page, setPage] = useState(1);
-  // Nota: utilizamos "monthOnly" para mantener la estructura actual, aunque luego
-  // getFilteredEvents espere quizá un parámetro "date". Por ahora no se toca eventos.js.
+  // Valores por defecto: "0" para filtros sin selección y null para monthOnly
   const [filter, setFilter] = useState({
     category: "0",
     province: "0",
@@ -27,8 +26,9 @@ function App() {
     monthOnly: null,
   });
   const [fallbackUsed, setFallbackUsed] = useState(false);
+  // Estado para el mensaje de error (cuando no hay eventos)
+  const [errorMessage, setErrorMessage] = useState("");
 
-  // useEffect para cargar eventos según los filtros y la página actual
   useEffect(() => {
     if (showingFavorites) return;
 
@@ -43,32 +43,36 @@ function App() {
         page,
         setFallbackUsed,
       });
-      setEventos(data);
+      // Si no se encuentran eventos, mostramos el mensaje y luego reseteamos los filtros
+      if (!data || data.length === 0) {
+        setErrorMessage(
+          "No se han encontrado eventos con los filtros seleccionados. Volviendo a la página principal..."
+        );
+        // Espera 5 segundos y luego resetea los filtros a la configuración por defecto
+        setTimeout(() => {
+          setFilter({ category: "0", province: "0", municipality: "0", monthOnly: null });
+          setPage(1);
+          setErrorMessage("");
+        }, 5000);
+      } else {
+        setEventos(data);
+        setErrorMessage(""); // Limpiar mensaje en caso de que hubiera
+      }
     }
     loadEvents();
   }, [page, filter, showingFavorites]);
 
-  // Guardamos favoritos en localStorage
   useEffect(() => {
     localStorage.setItem("favoritos", JSON.stringify(favorites));
   }, [favorites]);
 
-  // Manejador de filtros: recibe argumentos posicionales y actualiza el estado de filtro
   const handleFilter = (category, province, _date, municipality, monthOnly) => {
-    console.log("handleFilter llamado con:", {
-      category,
-      province,
-      _date,
-      municipality,
-      monthOnly,
-    });
-    // Actualizamos el estado de filtro (se actualiza solo lo que requiere eventos.js)
+    console.log("handleFilter llamado con:", { category, province, _date, municipality, monthOnly });
     setFilter({ category, province, municipality, monthOnly });
     setPage(1);
     setShowingFavorites(false);
   };
 
-  // Función para alternar favorito
   const toggleFavorite = (evento) => {
     const isAlreadyFavorite = favorites.some((fav) => fav.id === evento.id);
     if (isAlreadyFavorite) {
@@ -103,6 +107,12 @@ function App() {
       {fallbackUsed && (
         <div className="alerta-fallback">
           ⚠️ No se han podido cargar todos los eventos del mes. Mostrando solo los de hoy.
+        </div>
+      )}
+
+      {errorMessage && (
+        <div className="alerta-error" style={{ textAlign: "center", padding: "1rem", background: "#fdd", color: "#900" }}>
+          {errorMessage}
         </div>
       )}
 

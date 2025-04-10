@@ -15,7 +15,7 @@ function Navbar({ onFilter, onToggleFavorites, showingFavorites }) {
   const [selectedProvince, setSelectedProvince] = useState("0");
   const [selectedMunicipality, setSelectedMunicipality] = useState("0");
 
-  // Ahora, en lugar de una fecha concreta, capturamos un mes en formato YYYY-MM
+  // Capturamos el mes en formato YYYY-MM
   const [selectedMonth, setSelectedMonth] = useState("");
 
   // Cargar municipios según la provincia seleccionada
@@ -52,7 +52,9 @@ function Navbar({ onFilter, onToggleFavorites, showingFavorites }) {
   useEffect(() => {
     async function fetchCategories() {
       try {
-        const data = await fetchData("https://api.euskadi.eus/culture/events/v1.0/eventType");
+        const data = await fetchData(
+          "https://api.euskadi.eus/culture/events/v1.0/eventType"
+        );
         setCategories(data);
       } catch (error) {
         console.error("Error al obtener las categorías:", error);
@@ -65,7 +67,9 @@ function Navbar({ onFilter, onToggleFavorites, showingFavorites }) {
   useEffect(() => {
     async function fetchProvinces() {
       try {
-        const data = await fetchData("https://api.euskadi.eus/culture/events/v1.0/provinces");
+        const data = await fetchData(
+          "https://api.euskadi.eus/culture/events/v1.0/provinces"
+        );
         setProvinces(data.items);
       } catch (error) {
         console.error("Error al obtener las provincias:", error);
@@ -83,87 +87,109 @@ function Navbar({ onFilter, onToggleFavorites, showingFavorites }) {
     fetchMunicipalities(selectedProvince);
   }, [selectedProvince]);
 
+  // Función para limpiar los filtros
+  const handleClearFilters = () => {
+    console.log("Limpiando filtros...");
+    setSelectedCategory("0");
+    setSelectedProvince("0");
+    setSelectedMunicipality("0");
+    setSelectedMonth("");
+    // Llamamos a onFilter con los valores por defecto
+    onFilter("0", "0", null, "0", "");
+  };
+
   return (
     <nav>
       <div className="navbar-brand">
         <h1 className="logo2">🌄 Kultur Klik</h1>
       </div>
-
-      <Select
-        label="Categoría:"
-        type="categorias"
-        value={selectedCategory}
-        onChange={(value) => {
-          console.log("selectedCategory:", value);
-          setSelectedCategory(value);
-        }}
-      />
-
-      <Select
-        label="Provincia:"
-        type="provincias"
-        value={selectedProvince}
-        onChange={(value) => {
-          console.log("selectedProvince:", value);
-          setSelectedProvince(value);
-        }}
-      />
-
-      {selectedProvince !== "0" && (
+      <div className="select-container">
         <Select
-          label="Municipio:"
-          type="municipios"
-          value={selectedMunicipality}
+          label="Categoría:"
+          type="categorias"
+          value={selectedCategory}
           onChange={(value) => {
-            console.log("selectedMunicipality:", value);
-            setSelectedMunicipality(value);
+            console.log("selectedCategory:", value);
+            setSelectedCategory(value);
           }}
-          opciones={
-            loadingMunicipalities
-              ? [{ municipalityId: "-1", nameEs: "Cargando municipios..." }]
-              : municipalities
-          }
         />
-      )}
 
-      {/* Se reemplaza el input type="date" por un input type="month" */}
-      <div className="filtro-mes">
-        <label htmlFor="mes">Mes:</label>
-        <input
-          type="month"
-          id="mes"
-          value={selectedMonth}
-          onChange={(e) => {
-            console.log("Valor capturado (mes):", e.target.value);
-            setSelectedMonth(e.target.value);
+        <Select
+          label="Provincia:"
+          type="provincias"
+          value={selectedProvince}
+          onChange={(value) => {
+            console.log("selectedProvince:", value);
+            setSelectedProvince(value);
           }}
         />
+
+        {selectedProvince !== "0" && (
+          <Select
+            label="Municipio:"
+            type="municipios"
+            value={selectedMunicipality}
+            onChange={(value) => {
+              console.log("selectedMunicipality:", value);
+              setSelectedMunicipality(value);
+            }}
+            opciones={
+              loadingMunicipalities
+                ? [{ municipalityId: "-1", nameEs: "Cargando municipios..." }]
+                : municipalities
+            }
+          />
+        )}
+
+        {/* Input para seleccionar el mes */}
+        <div className="select-label-container">
+          <label htmlFor="mes">Mes:</label>
+          <input
+            className="input-mes"
+            type="month"
+            id="mes"
+            value={selectedMonth}
+            onChange={(e) => {
+              console.log("Valor capturado (mes):", e.target.value);
+              setSelectedMonth(e.target.value);
+            }}
+          />
+        </div>
       </div>
 
-      <Button
-        label="Filtrar"
-        onClick={() => {
-          console.log("Filtrando con los siguientes valores:");
-          console.log("Categoría:", selectedCategory);
-          console.log("Provincia:", selectedProvince);
-          console.log("Municipio:", selectedMunicipality);
-          console.log("Mes:", selectedMonth);
-          console.log("Página:", 1);
-          // Se llama a onFilter con argumentos posicionales:
-          // 1. selectedCategory  
-          // 2. selectedProvince  
-          // 3. null (porque ya no usamos una fecha concreta)  
-          // 4. selectedMunicipality  
-          // 5. selectedMonth (como monthOnly)
-          onFilter(selectedCategory, selectedProvince, null, selectedMunicipality, selectedMonth);
-        }}
-      />
+      <div className="botones-filtros">
+        <Button
+          label="Filtrar"
+          onClick={() => {
+            console.log("Filtrando con los siguientes valores:");
+            console.log("Categoría:", selectedCategory);
+            console.log("Provincia:", selectedProvince);
+            console.log("Municipio:", selectedMunicipality);
+            console.log("Mes:", selectedMonth);
+            console.log("Página:", 1);
+            // Llamada a onFilter con argumentos posicionales
+            onFilter(
+              selectedCategory,
+              selectedProvince,
+              null,
+              selectedMunicipality,
+              selectedMonth
+            );
+          }}
+        />
 
-      <Button
-        label={showingFavorites ? "Eventos" : "Favoritos"}
-        clase="boton"
-        onClick={onToggleFavorites}
-      />
+        <Button
+          label="Limpiar Filtros"
+          onClick={handleClearFilters}
+          className="boton" // Puedes ajustar la clase si lo deseas
+        />
+
+        <Button
+          label={showingFavorites ? "Eventos" : "Favoritos"}
+          className="boton"
+          onClick={onToggleFavorites}
+        />
+      </div>
     </nav>
   );
 }

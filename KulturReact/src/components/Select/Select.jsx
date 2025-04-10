@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { fetchData } from "../../utils/fech";
+import "./Select.css";
 
 function Select({ label, type, value, onChange, opciones }) {
     const [options, setOptions] = useState([]);
@@ -39,7 +40,7 @@ function Select({ label, type, value, onChange, opciones }) {
     const getKey = (option) => `${type}-${getValue(option)}`;
   
     return (
-      <div>
+      <div className="select-label-container">
         <label htmlFor={type}>{label}</label>
         <select id={type} name={type} value={value} onChange={(e) => onChange(e.target.value)}>
           <option value="0">Todos</option>

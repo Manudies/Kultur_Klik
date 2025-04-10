@@ -6,20 +6,42 @@ nav {
     justify-content: space-around;
     padding: 15px 20px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    z-index: 1000; /* Para que esté por encima de otros elementos */
+    z-index: 2; /* Para que esté por encima de otros elementos */
+}
+
+.navbar-brand .logo2 {
+    font-size: 1.8rem;
+    margin: 0 15px;
 }
 
 label {
     font-weight: bold;
     margin-right: 10px;
+    min-width: 80px;
 }
-
+ 
+.select-container {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    margin: 0 15px;
+}
 select {
+    width: 217px;
     padding: 8px;
     border-radius: 5px;
     border: none;
     font-size: 16px;
-    margin-right: 15px;
+    margin: 0 10px 5px;
+}
+
+.input-mes{
+    padding: 8px;
+    border-radius: 5px;
+    border: none;
+    font-size: 16px;
+    margin: 0 10px 5px;
+    max-width: 201px;
 }
 
 button {
@@ -31,7 +53,7 @@ button {
     cursor: pointer;
     font-size: 16px;
     transition: background 0.3s;
-    margin-left: 10px;
+    margin: 0 10px 5px;
 }
 
 button:hover {
