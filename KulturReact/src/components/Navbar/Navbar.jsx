@@ -160,6 +160,7 @@ function Navbar({ onFilter, onToggleFavorites, showingFavorites }) {
       <div className="botones-filtros">
         <Button
           label="Filtrar"
+          clase="boton-filtrar"
           onClick={() => {
             console.log("Filtrando con los siguientes valores:");
             console.log("Categoría:", selectedCategory);
@@ -180,6 +181,7 @@ function Navbar({ onFilter, onToggleFavorites, showingFavorites }) {
 
         <Button
           label="Limpiar Filtros"
+          clase="boton-limpiar"
           onClick={handleClearFilters}
           className="boton" // Puedes ajustar la clase si lo deseas
         />

@@ -45,7 +45,7 @@ function Select({ label, type, value, onChange, opciones }) {
         <select id={type} name={type} value={value} onChange={(e) => onChange(e.target.value)}>
           <option value="0">Todos</option>
           {options.map((option) => (
-            <option key={getKey(option)} value={getValue(option)}>
+            <option className="" key={getKey(option)} value={getValue(option)}>
               {option.nameEs}
             </option>
           ))}

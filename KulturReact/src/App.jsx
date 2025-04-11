@@ -106,12 +106,12 @@ function App() {
 
       {fallbackUsed && (
         <div className="alerta-fallback">
-          ⚠️ No se han podido cargar todos los eventos del mes. Mostrando solo los de hoy.
+          ⚠️ No se han podido cargar todos los eventos del mes. Mostrando todos eventos de hoy.
         </div>
       )}
 
       {errorMessage && (
-        <div className="alerta-error" style={{ textAlign: "center", padding: "1rem", background: "#fdd", color: "#900" }}>
+        <div >
           {errorMessage}
         </div>
       )}

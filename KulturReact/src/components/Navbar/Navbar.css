@@ -11,7 +11,7 @@ nav {
 
 .navbar-brand .logo2 {
     font-size: 1.8rem;
-    margin: 0 15px;
+    margin: 10px 15px;
 }
 
 label {
@@ -23,6 +23,7 @@ label {
 .select-container {
     display: flex;
     align-items: center;
+    justify-content: center;
     flex-wrap: wrap;
     margin: 0 15px;
 }
@@ -56,6 +57,10 @@ button {
     margin: 0 10px 5px;
 }
 
+ button .boton-filtrar{
+    background: #0066cc;
+}
+
 button:hover {
     background: #000000;
 }
@@ -67,10 +72,17 @@ button:hover {
         align-items: center;
         padding: 10px;
     }
-
+/* 
     label, select, button {
-        width: 100%; /* Ocupan todo el ancho */
+        width: 100%; 
         text-align: center;
         margin: 5px 0;
+    } */
+    .botones-filtros{
+        margin-top: 10px;
+    }
+
+    .logo2{
+        margin-bottom: 10px;
     }
 }
