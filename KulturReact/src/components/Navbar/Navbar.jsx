@@ -101,7 +101,7 @@ function Navbar({ onFilter, onToggleFavorites, showingFavorites }) {
   return (
     <nav>
       <div className="navbar-brand">
-        <h1 className="logo2">🌄 Kultur Klik</h1>
+        <h1 className="logo2">🌄 COOLTOKI</h1>
       </div>
       <div className="select-container">
         <Select
@@ -140,7 +140,6 @@ function Navbar({ onFilter, onToggleFavorites, showingFavorites }) {
             }
           />
         )}
-
         {/* Input para seleccionar el mes */}
         <div className="select-label-container">
           <label htmlFor="mes">Mes:</label>
