@@ -26,7 +26,6 @@ function App() {
     monthOnly: null,
   });
   const [fallbackUsed, setFallbackUsed] = useState(false);
-  // Estado para el mensaje de error (cuando no hay eventos)
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
@@ -43,12 +42,11 @@ function App() {
         page,
         setFallbackUsed,
       });
-      // Si no se encuentran eventos, mostramos el mensaje y luego reseteamos los filtros
+
       if (!data || data.length === 0) {
         setErrorMessage(
           "No se han encontrado eventos con los filtros seleccionados. Volviendo a la página principal..."
         );
-        // Espera 5 segundos y luego resetea los filtros a la configuración por defecto
         setTimeout(() => {
           setFilter({ category: "0", province: "0", municipality: "0", monthOnly: null });
           setPage(1);
@@ -56,9 +54,10 @@ function App() {
         }, 5000);
       } else {
         setEventos(data);
-        setErrorMessage(""); // Limpiar mensaje en caso de que hubiera
+        setErrorMessage("");
       }
     }
+
     loadEvents();
   }, [page, filter, showingFavorites]);
 
@@ -103,15 +102,15 @@ function App() {
         onToggleFavorites={handleToggleFavorites}
         showingFavorites={showingFavorites}
       />
-
-      {fallbackUsed && (
+      
+      {fallbackUsed && !showingFavorites && (
         <div className="alerta-fallback">
           ⚠️ No se han podido cargar todos los eventos del mes. Mostrando todos eventos de hoy.
         </div>
       )}
 
       {errorMessage && (
-        <div >
+        <div>
           {errorMessage}
         </div>
       )}
@@ -122,21 +121,9 @@ function App() {
         favorites={favorites}
         showingFavorites={showingFavorites}
         page={page}
+        handlePreviousPage={handlePreviousPage}
+        handleNextPage={handleNextPage}
       />
-
-      {!showingFavorites && (
-        <div style={{ textAlign: "center", margin: "2rem" }}>
-          {page > 1 && (
-            <button onClick={handlePreviousPage} className="boton">
-              ◀ Página anterior
-            </button>
-          )}
-          <span style={{ margin: "0 1rem" }}>Página {page}</span>
-          <button onClick={handleNextPage} className="boton">
-            Página siguiente ▶
-          </button>
-        </div>
-      )}
 
       <Footer />
     </div>
