@@ -85,16 +85,18 @@ async function getFilteredEvents({
 
   try {
     const data = await fetchData(url);
-    if (data && data.items && data.items.length > 0) {
+    if (data && data.items) {
+      // Devuelve resultados, aunque vengan vacíos (caso normal sin resultados con filtros)
       return data.items;
     }
-    // Si no se obtienen items, forzamos el error para pasar al fallback.
-    throw new Error("No se encontraron eventos");
+  
+    // Solo si la API devuelve una estructura inesperada, hacemos fallback
+    throw new Error("Respuesta de API mal formada");
   } catch (error) {
     console.warn("⚠️ Error al obtener eventos:", error);
-    // Fallback: mantener el fallback en el día actual
+    // Fallback solo si hubo un error real en la llamada
     if (setFallbackUsed) setFallbackUsed(true);
-    const currentDate = formatDate(); // Formatea la fecha actual
+    const currentDate = formatDate();
     const fallbackUrl = `${baseUrl}/byDate/${currentDate.year}/${currentDate.month}/${currentDate.day}?_elements=20&_page=${page}`;
     console.log("🛰️ Fallback endpoint:", fallbackUrl);
     const fallbackData = await fetchData(fallbackUrl);

@@ -44,14 +44,16 @@ function App() {
       });
 
       if (!data || data.length === 0) {
+        setEventos([]);
         setErrorMessage(
-          "No se han encontrado eventos con los filtros seleccionados. Volviendo a la página principal..."
+          <h3>No se han encontrado eventos con los filtros seleccionados. Volviendo a la página principal...</h3>
+          //"No se han encontrado eventos con los filtros seleccionados. Volviendo a la página principal..."
         );
         setTimeout(() => {
           setFilter({ category: "0", province: "0", municipality: "0", monthOnly: null });
           setPage(1);
           setErrorMessage("");
-        }, 5000);
+        }, 4000);
       } else {
         setEventos(data);
         setErrorMessage("");

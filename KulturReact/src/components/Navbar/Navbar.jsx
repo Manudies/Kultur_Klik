@@ -101,7 +101,7 @@ function Navbar({ onFilter, onToggleFavorites, showingFavorites }) {
   return (
     <nav>
       <div className="navbar-brand">
-        <h1 className="logo2">🌄 COOLTOKI</h1>
+        <img className="logo" src="./logo.png" alt="Logo cooltoki" />
       </div>
       <div className="select-container">
         <Select
